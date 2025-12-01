@@ -11,7 +11,7 @@
 }
 
 .about-section img {
-    width: 180px;
+    width: 250px;
     border-radius: 12px;
     box-shadow: 0 4px 15px rgba(0,0,0,0.15);
 }
@@ -69,4 +69,5 @@
     font-weight: 600;
 
 }
+
 
