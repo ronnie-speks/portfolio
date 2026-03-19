@@ -1,67 +1,444 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projects - Ronald Portfolio</title>
-    <link rel="stylesheet" href="project.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Projects — Ronald Alyao</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0a0a0f;
+      --surface:  #111118;
+      --border:   #1e1e2e;
+      --accent:   #00f5c4;
+      --accent2:  #ff6b35;
+      --text:     #e8e8f0;
+      --muted:    #5a5a78;
+      --font-display: 'Syne', sans-serif;
+      --font-body:    'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 14px;
+      line-height: 1.7;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    #cursor {
+      width: 10px; height: 10px;
+      background: var(--accent); border-radius: 50%;
+      position: fixed; top: 0; left: 0;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+      mix-blend-mode: difference;
+    }
+    #cursor.hovered { width: 36px; height: 36px; background: var(--accent2); }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='1'/%3E%3C/svg%3E");
+      opacity: 0.025; pointer-events: none;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 2px; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 24px 48px;
+      background: linear-gradient(to bottom, rgba(10,10,15,0.97), transparent);
+      backdrop-filter: blur(8px);
+    }
+    .nav-logo {
+      font-family: var(--font-display); font-weight: 800; font-size: 18px;
+      letter-spacing: -0.03em; color: var(--accent); text-decoration: none;
+    }
+    .nav-back {
+      display: flex; align-items: center; gap: 8px;
+      color: var(--muted); text-decoration: none;
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-back:hover { color: var(--accent); }
+    .nav-back svg { transition: transform 0.2s; }
+    .nav-back:hover svg { transform: translateX(-4px); }
+
+    /* PAGE HEADER */
+    .page-header {
+      position: relative; z-index: 1;
+      padding: 160px 48px 80px;
+      max-width: 1200px; margin: 0 auto;
+      border-bottom: 1px solid var(--border);
+    }
+    .page-header-label {
+      font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 20px;
+      display: flex; align-items: center; gap: 8px;
+      opacity: 0; animation: fadeUp 0.7s 0.1s forwards;
+    }
+    .pulse {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--accent); display: inline-block;
+      animation: pulseAnim 1.5s infinite;
+    }
+    @keyframes pulseAnim {
+      0%,100% { opacity:1; transform:scale(1); }
+      50%      { opacity:0.3; transform:scale(1.5); }
+    }
+    .page-header h1 {
+      font-family: var(--font-display);
+      font-size: clamp(48px, 8vw, 100px);
+      font-weight: 800; line-height: 0.9; letter-spacing: -0.04em;
+      opacity: 0; animation: fadeUp 0.7s 0.25s forwards;
+    }
+    .page-header h1 span { color: var(--accent); }
+    .page-header-sub {
+      margin-top: 28px; max-width: 500px;
+      font-size: 13px; color: var(--muted); line-height: 1.9;
+      opacity: 0; animation: fadeUp 0.7s 0.4s forwards;
+    }
+
+    /* FILTER BAR */
+    .filter-bar {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      padding: 32px 48px;
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      border-bottom: 1px solid var(--border);
+      opacity: 0; animation: fadeUp 0.7s 0.5s forwards;
+    }
+    .filter-label { font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-right: 4px; }
+    .filter-btn {
+      font-family: var(--font-body);
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 6px 16px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted);
+      cursor: none; transition: all 0.2s;
+    }
+    .filter-btn:hover, .filter-btn.active { border-color: var(--accent); color: var(--accent); }
+    .filter-btn.active { background: rgba(0,245,196,0.06); }
+
+    /* PROJECTS GRID */
+    .projects-wrap {
+      position: relative; z-index: 1;
+      max-width: 1200px; margin: 0 auto;
+      padding: 0 48px 80px;
+    }
+
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px; background: var(--border);
+      border: 1px solid var(--border);
+      margin-top: 48px;
+    }
+
+    .project-card {
+      background: var(--surface);
+      padding: 36px; position: relative; overflow: hidden;
+      transition: background 0.3s;
+      opacity: 0; transform: translateY(30px);
+      animation: fadeUp 0.6s forwards;
+    }
+    .project-card:nth-child(1) { animation-delay: 0.55s; }
+    .project-card:nth-child(2) { animation-delay: 0.65s; }
+    .project-card:nth-child(3) { animation-delay: 0.75s; }
+
+    .project-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0;
+      height: 2px; width: 0; background: var(--accent);
+      transition: width 0.4s;
+    }
+    .project-card:hover { background: #13131f; }
+    .project-card:hover::after { width: 100%; }
+
+    /* hidden state for filter */
+    .project-card.hidden {
+      display: none;
+    }
+
+    .card-top {
+      display: flex; justify-content: space-between; align-items: flex-start;
+      margin-bottom: 24px;
+    }
+    .project-number { font-size: 11px; color: var(--muted); letter-spacing: 0.15em; }
+    .project-status {
+      font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 3px 10px; border: 1px solid;
+    }
+    .project-status.live    { border-color: var(--accent);  color: var(--accent); }
+    .project-status.wip     { border-color: var(--accent2); color: var(--accent2); }
+    .project-status.coming  { border-color: var(--muted);   color: var(--muted); }
+
+    .project-title {
+      font-family: var(--font-display); font-size: 22px;
+      font-weight: 700; line-height: 1.1; margin-bottom: 10px;
+    }
+    .project-org {
+      font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--accent2); margin-bottom: 16px;
+    }
+    .project-desc {
+      color: var(--muted); font-size: 12px; line-height: 1.85;
+      margin-bottom: 24px;
+    }
+
+    .project-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 28px; }
+    .tag {
+      font-size: 9px; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 3px 9px; border: 1px solid var(--border); color: var(--muted);
+    }
+
+    .project-links { display: flex; gap: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .project-link {
+      font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--accent); text-decoration: none;
+      display: inline-flex; align-items: center; gap: 6px; transition: gap 0.2s;
+    }
+    .project-link:hover { gap: 10px; }
+    .project-link.secondary { color: var(--muted); }
+    .project-link.secondary:hover { color: var(--accent2); gap: 10px; }
+    .project-link.disabled { color: var(--border); pointer-events: none; }
+
+    /* EMPTY STATE */
+    .empty-state {
+      display: none; text-align: center;
+      padding: 80px 24px; color: var(--muted);
+      font-size: 13px; letter-spacing: 0.05em;
+    }
+    .empty-state.visible { display: block; }
+
+    /* BACK TO PORTFOLIO BANNER */
+    .back-banner {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 48px;
+      max-width: 1200px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .back-banner p { color: var(--muted); font-size: 12px; max-width: 360px; line-height: 1.8; }
+    .back-banner p strong { color: var(--text); font-weight: 400; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 28px; font-family: var(--font-body);
+      font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+      text-decoration: none; border: none; cursor: none; transition: all 0.25s;
+    }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+
+    /* FOOTER */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid var(--border);
+      padding: 24px 48px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--muted); font-size: 11px; letter-spacing: 0.08em;
+    }
+
+    @keyframes fadeUp {
+      from { opacity:0; transform:translateY(30px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    @media (max-width: 900px) {
+      nav, .page-header, .filter-bar, .projects-wrap, .back-banner, footer { padding-left: 24px; padding-right: 24px; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .back-banner { flex-direction: column; gap: 24px; align-items: flex-start; }
+      .nav-links { display: none; }
+    }
+    @media (max-width: 600px) {
+      .page-header { padding-top: 120px; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- ===== NAVBAR ===== -->
-    <header>
-        <nav class="navbar">
-            <h2 class="logo">Ronald</h2>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a class="active" href="projects.html">Projects</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
+<div id="cursor"></div>
 
-    <!-- ===== PROJECTS SECTION ===== -->
-    <section class="projects">
-        <h1>My Projects</h1>
+<!-- NAV -->
+<nav>
+  <a href="portfolio.html" class="nav-logo">RA.</a>
+  <a href="index.html" class="nav-back">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M19 12H5M5 12l7 7M5 12l7-7"/>
+    </svg>
+    Back to portfolio
+  </a>
+</nav>
 
-        <div class="projects-grid">
+<!-- PAGE HEADER -->
+<div class="page-header">
+  <p class="page-header-label"><span class="pulse"></span> Ronald Alyao &nbsp;·&nbsp; All work</p>
+  <h1>My<br/><span>Projects.</span></h1>
+  <p class="page-header-sub">
+    A collection of everything I've built so far — real sites, experiments, and coursework projects.
+    Still early in my journey, but growing with every line of code.
+  </p>
+</div>
 
-            <div class="project-card">
-                <img src="image/project1.png" alt="Café Control Pro Screenshot">
-                <h3>Café Control Pro</h3>
-                <p>A cyber café management system to track users, payments, and reports efficiently.</p>
-                <a href="#" class="btn">View Code</a>
-            </div>
+<!-- FILTER BAR -->
+<div class="filter-bar">
+  <span class="filter-label">Filter by:</span>
+  <button class="filter-btn active" data-filter="all">All</button>
+  <button class="filter-btn" data-filter="html">HTML</button>
+  <button class="filter-btn" data-filter="css">CSS</button>
+  <button class="filter-btn" data-filter="javascript">JavaScript</button>
+  <button class="filter-btn" data-filter="python">Python</button>
+</div>
 
-            <div class="project-card">
-                <img src="image/project2.png" alt="Portfolio Screenshot">
-                <h3>Personal Portfolio Website</h3>
-                <p>My own professional portfolio website showcasing skills, projects, and contact info.</p>
-                <a href="#" class="btn">View Code</a>
-            </div>
+<!-- PROJECTS -->
+<div class="projects-wrap">
+  <div class="projects-grid" id="projectsGrid">
 
-            <div class="project-card">
-                <img src="image/project3.png" alt="Login Form Screenshot">
-                <h3>Login & Register Forms</h3>
-                <p>Clean and responsive login & registration UI using HTML and CSS.</p>
-                <a href="#" class="btn">View Code</a>
-            </div>
+    <!-- PROJECT 1 — REAL -->
+    <div class="project-card" data-tags="html,css,javascript">
+      <div class="card-top">
+        <span class="project-number">001</span>
+        <span class="project-status live">Live</span>
+      </div>
+      <h3 class="project-title">Pur En Lonyo Cooperative</h3>
+      <p class="project-org">Itek Sub-County, Lira District · Uganda</p>
+      <p class="project-desc">
+        A complete multi-page website built for a real, legally registered farmers' cooperative in Northern Uganda.
+        Covers the organisation's activities, products (maize, soya beans, sunflower, fruits &amp; vegetables),
+        membership info, news, and a contact page. My first experience shipping a real website for an actual client —
+        planned, built, and deployed entirely by me.
+      </p>
+      <div class="project-tags">
+        <span class="tag">HTML</span>
+        <span class="tag">CSS</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">GitHub Pages</span>
+        <span class="tag">Multi-page</span>
+      </div>
+      <div class="project-links">
+        <a href="https://ronnie-speks.github.io/COORPERATIVE/" target="_blank" class="project-link">Live site &#8594;</a>
+        <a href="https://github.com/ronnie-speks/COORPERATIVE" target="_blank" class="project-link secondary">GitHub &#8594;</a>
+      </div>
+    </div>
 
-            <div class="project-card">
-                <img src="image/project4.png" alt="Other Project Screenshot">
-                <h3>Sample HTML/CSS Project</h3>
-                <p>A small project demonstrating grid layouts, typography, and responsive design.</p>
-                <a href="#" class="btn">View Code</a>
-            </div>
+    <!-- PROJECT 2 — Next Step Initiative (REAL) -->
+    <div class="project-card" data-tags="html,css,javascript">
+      <div class="card-top">
+        <span class="project-number">002</span>
+        <span class="project-status live">Live</span>
+      </div>
+      <h3 class="project-title">Next Step Initiative</h3>
+      <p class="project-org">Lango Sub-Region, Northern Uganda</p>
+      <p class="project-desc">
+        A full multi-page website for a real career guidance &amp; counselling NGO serving primary and secondary school students across the Lango sub-region of Uganda. The site covers the initiative's mission, four core services (school visits, career counselling, workshops, and mentorship), a leadership page, a code of conduct, and a donation/support page. Built and deployed for an actual organisation making a difference in students' lives.
+      </p>
+      <div class="project-tags">
+        <span class="tag">HTML</span>
+        <span class="tag">CSS</span>
+        <span class="tag">JavaScript</span>
+        <span class="tag">GitHub Pages</span>
+        <span class="tag">Multi-page</span>
+        <span class="tag">NGO</span>
+      </div>
+      <div class="project-links">
+        <a href="https://ronnie-speks.github.io/NEXT-STEP/" target="_blank" class="project-link">Live site &#8594;</a>
+        <a href="https://github.com/ronnie-speks/NEXT-STEP" target="_blank" class="project-link secondary">GitHub &#8594;</a>
+      </div>
+    </div>
 
-        </div>
-    </section>
+    <!-- PROJECT 3 — placeholder -->
+    <div class="project-card" data-tags="html,css,javascript">
+      <div class="card-top">
+        <span class="project-number">003</span>
+        <span class="project-status coming">Coming soon</span>
+      </div>
+      <h3 class="project-title">Project Three</h3>
+      <p class="project-org">Replace with your project's context</p>
+      <p class="project-desc">
+        What are you building or planning to build next? Even a work-in-progress shows ambition. Describe what you're aiming to achieve and what new skills you're practising.
+      </p>
+      <div class="project-tags">
+        <span class="tag">HTML</span>
+        <span class="tag">CSS</span>
+        <span class="tag">JavaScript</span>
+      </div>
+      <div class="project-links">
+        <a href="#" class="project-link disabled">Live demo &#8594;</a>
+        <a href="#" class="project-link secondary disabled">GitHub &#8594;</a>
+      </div>
+    </div>
 
-    <!-- ===== FOOTER ===== -->
-    <footer>
-        <p>&copy 2025 Ronald Alyao. All Rights Reserved.</p>
-    </footer>
+  </div>
+
+  <div class="empty-state" id="emptyState">
+    No projects match this filter yet — more coming soon.
+  </div>
+</div>
+
+<!-- BACK BANNER -->
+<div class="back-banner">
+  <p>Want to know more about me, my skills, or get in touch?<br/>
+  <strong>Head back to the main portfolio.</strong></p>
+  <a href="index.html" class="btn btn-outline">&#8592; Back to portfolio</a>
+</div>
+
+<footer>
+  <span>© 2026 Ronald Alyao · BIT Student &amp; Frontend Developer</span>
+  <span>Built with HTML, CSS &amp; JS ♥</span>
+</footer>
+
+<script>
+  /* Cursor */
+  const cursor = document.getElementById('cursor');
+  document.addEventListener('mousemove', e => {
+    cursor.style.left = e.clientX + 'px';
+    cursor.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a, button, .project-card').forEach(el => {
+    el.addEventListener('mouseenter', () => cursor.classList.add('hovered'));
+    el.addEventListener('mouseleave', () => cursor.classList.remove('hovered'));
+  });
+
+  /* Filter */
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const cards      = document.querySelectorAll('.project-card');
+  const empty      = document.getElementById('emptyState');
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filter = btn.dataset.filter;
+      let visible = 0;
+
+      cards.forEach(card => {
+        const tags = card.dataset.tags.split(',');
+        if (filter === 'all' || tags.includes(filter)) {
+          card.classList.remove('hidden');
+          visible++;
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+
+      empty.classList.toggle('visible', visible === 0);
+    });
+  });
+</script>
 
 </body>
 </html>
